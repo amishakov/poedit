@@ -1,0 +1,41 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/Dependencies/">
+    <Project Path="deps/custom_build/boost.vcxproj" />
+    <Project Path="deps/custom_build/cld2.vcxproj" />
+    <Project Path="deps/custom_build/cpprestsdk.vcxproj" />
+    <Project Path="deps/custom_build/mctrl.vcxproj" />
+    <Project Path="deps/custom_build/wx_adv.vcxproj" />
+    <Project Path="deps/custom_build/wx_base.vcxproj" />
+    <Project Path="deps/custom_build/wx_core.vcxproj" />
+    <Project Path="deps/custom_build/wx_net.vcxproj" />
+    <Project Path="deps/custom_build/wx_qa.vcxproj" />
+    <Project Path="deps/custom_build/wx_webview.vcxproj" />
+    <Project Path="deps/custom_build/wx_wxpng.vcxproj" />
+    <Project Path="deps/custom_build/wx_wxregex.vcxproj" />
+    <Project Path="deps/custom_build/wx_xml.vcxproj" />
+    <Project Path="deps/custom_build/wx_xrc.vcxproj" />
+    <Project Path="deps/custom_build/zlib.vcxproj" />
+    <Project Path="deps/lucene/LucenePlusPlus.vcxproj" />
+  </Folder>
+  <Folder Name="/Dependencies/Debugging/">
+    <File Path="deps/boost/assert/extra/boost_assert.natvis" />
+    <File Path="deps/boost/core/extra/boost_core.natvis" />
+    <File Path="deps/boost/system/extra/boost_system.natvis" />
+    <File Path="deps/json/nlohmann_json.natvis" />
+    <File Path="deps/pugixml/scripts/natvis/pugixml.natvis" />
+  </Folder>
+  <Project Path="Poedit.vcxproj">
+    <BuildDependency Project="deps/custom_build/wx_adv.vcxproj" />
+    <BuildDependency Project="deps/custom_build/wx_base.vcxproj" />
+    <BuildDependency Project="deps/custom_build/wx_core.vcxproj" />
+    <BuildDependency Project="deps/custom_build/wx_net.vcxproj" />
+    <BuildDependency Project="deps/custom_build/wx_qa.vcxproj" />
+    <BuildDependency Project="deps/custom_build/wx_wxpng.vcxproj" />
+    <BuildDependency Project="deps/custom_build/wx_wxregex.vcxproj" />
+    <BuildDependency Project="deps/custom_build/wx_xml.vcxproj" />
+    <BuildDependency Project="deps/custom_build/wx_xrc.vcxproj" />
+  </Project>
+</Solution>
