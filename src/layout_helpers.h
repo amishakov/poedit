@@ -100,6 +100,8 @@ protected:
     void FitSizer()
     {
         this->SetSizerAndFit(m_topSizer);
+        this->Layout();
+        this->GetSizer()->SetSizeHints(this);
     }
 
 protected:

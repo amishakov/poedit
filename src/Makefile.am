@@ -94,7 +94,6 @@ poedit_LDADD = $(WX_LIBS) $(LUCENE_LIBS) $(CLD2_LIBS) $(PUGIXML_LIBS) $(ACCOUNTS
 XRC_RESOURCES = \
         $(srcdir)/resources/manager.xrc \
         $(srcdir)/resources/menus.xrc \
-        $(srcdir)/resources/prefs.xrc \
         $(srcdir)/resources/properties.xrc
 
 compiled_xrc.cpp: $(XRC_RESOURCES)

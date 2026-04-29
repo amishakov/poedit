@@ -493,9 +493,6 @@
     <None Include="src\resources\menus.xrc">
       <Filter>Data Files</Filter>
     </None>
-    <None Include="src\resources\prefs.xrc">
-      <Filter>Data Files</Filter>
-    </None>
     <None Include="src\resources\properties.xrc">
       <Filter>Data Files</Filter>
     </None>

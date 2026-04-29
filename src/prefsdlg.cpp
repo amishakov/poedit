@@ -49,7 +49,6 @@
 #include <wx/spinctrl.h>
 #include <wx/textwrapper.h>
 #include <wx/progdlg.h>
-#include <wx/xrc/xmlres.h>
 #include <wx/numformatter.h>
 
 #ifdef __WXOSX__
@@ -853,17 +852,109 @@ private:
     class ExtractorEditDialog : public StandardDialog
     {
     public:
-        ExtractorEditDialog(wxWindow *parent) : StandardDialog(parent, _("Extractor setup"))
+        ExtractorEditDialog(wxWindow *parent)
+            : StandardDialog(parent, _("Extractor setup"), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
         {
             auto sizer = ContentSizer();
+            sizer->SetMinSize(PX(520), -1);
 
-            auto panel = wxXmlResource::Get()->LoadPanel(this, "edit_extractor");
-            sizer->Add(panel, wxSizerFlags(1).Expand());
+#ifdef __WXOSX__
+            sizer->Add(new HeadingLabel(this, _("Extractor setup")));
+            sizer->AddSpacer(PX(16));
+#endif
 
-            CreateButtons(wxOK | wxCANCEL);
+            m_language = AddTextField(_("Language:"));
+            m_extensions = AddTextField(_("List of extensions separated by semicolons (e.g. *.cpp;*.h):"));
+
+            sizer->AddSpacer(PX(16));
+            //sizer->Add(new wxStaticLine(this, wxID_ANY), wxSizerFlags().Expand());
+            //sizer->AddSpacer(PX(8));
+            sizer->Add(new HeadingLabel(this, _("Invocation:")));
+            sizer->AddSpacer(PX(8));
+
+            m_command = AddTextField(_("Command to extract translations:"),
+                                     "xgettext -L PHP --add-comments=TRANSLATORS: --force-po -o %o %C %K %F",
+                                     LegacyXrcExplanation(_(
+                                         "This is the command used to launch the extractor.\n"
+                                         "%o expands to the name of output file, %K to list\n"
+                                         "of keywords, %F to list of input files,\n"
+                                         "%C to charset flag (see below).")));
+            m_keywords = AddTextField(_("An item in keywords list:"),
+                                      "-k%k",
+                                      LegacyXrcExplanation(_(
+                                          "This will be attached to the command line once\n"
+                                          "for each keyword. %k expands to the keyword.")));
+            m_files = AddTextField(_("An item in input files list:"),
+                                   "%f",
+                                   LegacyXrcExplanation(_(
+                                       "This will be attached to the command line once\n"
+                                       "for each input file. %f expands to the filename.")));
+            m_charset = AddTextField(_("Source code charset:"),
+                                     "--from-code=%c",
+                                     LegacyXrcExplanation(_(
+                                         "This will be attached to the command line\n"
+                                         "only if source code charset was given. %c expands to charset value.")));
+
+            sizer->AddSpacer(PX(8));
+
+            CreateButtons()
+                .Add(wxID_OK)
+                .Add(wxID_CANCEL);
 
             FitSizer();
         }
+
+        wxTextCtrl *Language() const { return m_language; }
+        wxTextCtrl *Extensions() const { return m_extensions; }
+        wxTextCtrl *Command() const { return m_command; }
+        wxTextCtrl *Keywords() const { return m_keywords; }
+        wxTextCtrl *Files() const { return m_files; }
+        wxTextCtrl *Charset() const { return m_charset; }
+
+    private:
+        wxTextCtrl *AddTextField(const wxString& label, const wxString& hint = wxEmptyString, const wxString& explanation = wxEmptyString)
+        {
+            auto sizer = ContentSizer();
+
+            auto labelCtrl = new wxStaticText(this, wxID_ANY, label);
+            sizer->Add(labelCtrl, wxSizerFlags().Expand());
+
+            auto text = new wxTextCtrl(this, wxID_ANY);
+            if (!hint.empty())
+                text->SetHint(hint);
+            sizer->Add(text, wxSizerFlags().Expand().Border(wxTOP|wxBOTTOM, PX(4)));
+
+            if (!explanation.empty())
+            {
+                sizer->Add(new ExplanationLabel(this, explanation), wxSizerFlags().Expand().Border(wxBOTTOM, PX(8)));
+            }
+            else
+            {
+                sizer->AddSpacer(PX(8));
+            }
+
+#ifdef __WXOSX__
+            labelCtrl->SetWindowVariant(wxWINDOW_VARIANT_SMALL);
+            text->SetWindowVariant(wxWINDOW_VARIANT_SMALL);
+#endif
+
+            return text;
+        }
+
+        static wxString LegacyXrcExplanation(wxString text)
+        {
+            // This is done to preserve existing translations that were written with hardcoded newlines
+            text.Replace("\n", " ");
+            return text;
+        }
+
+    private:
+        wxTextCtrl *m_language = nullptr;
+        wxTextCtrl *m_extensions = nullptr;
+        wxTextCtrl *m_command = nullptr;
+        wxTextCtrl *m_keywords = nullptr;
+        wxTextCtrl *m_files = nullptr;
+        wxTextCtrl *m_charset = nullptr;
     };
 
     /// Called to launch dialog for editing parser properties.
@@ -871,14 +962,16 @@ private:
     void EditExtractor(int num, TFunctor completionHandler)
     {
         wxWindowPtr<ExtractorEditDialog> dlg(new ExtractorEditDialog(this));
-        dlg->Centre();
+#ifndef __WXOSX__
+        dlg->CenterOnParent();
+#endif
 
-        auto extractor_language = XRCCTRL(*dlg, "extractor_language", wxTextCtrl);
-        auto extractor_extensions = XRCCTRL(*dlg, "extractor_extensions", wxTextCtrl);
-        auto extractor_command = XRCCTRL(*dlg, "extractor_command", wxTextCtrl);
-        auto extractor_keywords = XRCCTRL(*dlg, "extractor_keywords", wxTextCtrl);
-        auto extractor_files = XRCCTRL(*dlg, "extractor_files", wxTextCtrl);
-        auto extractor_charset = XRCCTRL(*dlg, "extractor_charset", wxTextCtrl);
+        auto extractor_language = dlg->Language();
+        auto extractor_extensions = dlg->Extensions();
+        auto extractor_command = dlg->Command();
+        auto extractor_keywords = dlg->Keywords();
+        auto extractor_files = dlg->Files();
+        auto extractor_charset = dlg->Charset();
 
         {
             const LegacyExtractorSpec& nfo = m_extractors.Data[num];
